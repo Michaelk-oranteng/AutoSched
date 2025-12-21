@@ -1,0 +1,192 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/index.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>AutoSched</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="active"><span>📊</span> Dashboard</a>
+            <a href="#department-modal"><span>🏫</span> Departments</a>
+            <a href="#course-modal"><span>📚</span> Courses</a>
+            <a href="#room-modal"><span>📍</span> Rooms</a>
+            <a href="#lecturer-modal"><span>👥</span> Lecturers</a>
+        </nav>
+    </aside>
+
+    <main class="main-portal">
+        <header class="portal-header">
+            <div class="welcome-msg">
+                <h2>Welcome Back, Developer</h2>
+            </div>
+            <div class="user-profile">
+                <div class="dropdown-container" tabindex="0">
+                    <div class="avatar">MK</div>
+                    <ul class="avatar-dropdown">
+                        <li><a href="#profile-modal"><span>👤</span> Profile</a></li>
+                        <li><a href="#settings-modal"><span>⚙️</span> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'home' %}" class="logout-link"><span>🚪</span> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-container">
+            <a href="#department-modal" class="stat-card clickable"><h3>Add Department</h3></a>
+            <a href="#course-modal" class="stat-card clickable"><h3>Add Course</h3></a>
+            <a href="#room-modal" class="stat-card clickable"><h3>Add Rooms</h3></a>
+            <a href="#lecturer-modal" class="stat-card clickable"><h3>Add Lecturer</h3></a>
+            <a href="{% url 'generate' %}" class="stat-card clickable"><h3>Generate Timetable</h3></a>
+        </section>
+    </main>
+</div>
+
+<div id="department-modal" class="modal-overlay">
+    <div class="modal-content glass-card split-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add Department</h2>
+            <p>Enter details manually or upload a CSV/Excel file.</p>
+        </div>
+
+        <div class="split-container">
+            <div class="manual-entry-column">
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Department Name</label>
+                            <input type="text" name="dept_name" placeholder="Computer Science" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Short Name</label>
+                            <input type="text" name="dept_code" placeholder="CS" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Head of Dept</label>
+                            <select name="hod"><option>Select HOD</option></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">Create Department</button>
+                </form>
+            </div>
+
+            <div class="vertical-divider"><span>OR</span></div>
+
+            <div class="bulk-upload-column">
+                <div class="upload-box">
+                    <div class="upload-icon">📁</div>
+                    <h3>Bulk Upload</h3>
+                    <p class="upload-info">Upload department CSV file</p>
+                    <button class="upload-trigger-btn">Browse Files</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="course-modal" class="modal-overlay">
+    <div class="modal-content glass-card split-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add New Course</h2>
+        </div>
+
+        <div class="split-container">
+            <div class="manual-entry-column">
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="input-group"><label>Department</label><select><option>Select</option></select></div>
+                        <div class="input-group"><label>Course Name</label><input type="text" required></div>
+                        <div class="input-group"><label>Course Code</label><input type="text" required></div>
+                        <div class="input-group"><label>Academic Level</label><input type="text" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group"><label>Lecturer</label><select><option>Select</option></select></div>
+                    </div>
+                    <button type="submit" class="save-btn">Register Course</button>
+                </form>
+            </div>
+            <div class="vertical-divider"><span>OR</span></div>
+            <div class="bulk-upload-column">
+                <div class="upload-box">
+                    <div class="upload-icon">📊</div>
+                    <h3>Upload Course List</h3>
+                    <button class="upload-trigger-btn">Select File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="room-modal" class="modal-overlay">
+    <div class="modal-content glass-card split-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h2>Add Room</h2></div>
+        <div class="split-container">
+            <div class="manual-entry-column">
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="input-group"><label>Room Name</label><input type="text" required></div>
+                        <div class="input-group"><label>Capacity</label><input type="number" required></div>
+                        <div class="input-group1"><label>Faculty/ Department</label><input type="number" required></div>
+                    </div>
+                    <button type="submit" class="save-btn">Register Room</button>
+                </form>
+            </div>
+            <div class="vertical-divider"><span>OR</span></div>
+            <div class="bulk-upload-column">
+                <div class="upload-box">
+                    <div class="upload-icon">📍</div>
+                    <h3>Upload Floor Data</h3>
+                    <button class="upload-trigger-btn">Select File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="lecturer-modal" class="modal-overlay">
+    <div class="modal-content glass-card split-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h2>Profile Lecturer</h2></div>
+        <div class="split-container">
+            <div class="manual-entry-column">
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="input-group"><label>First Name</label><input type="text" required></div>
+                        <div class="input-group"><label>Last Name</label><input type="text" required></div>
+                        <div class="input-group"><label>Department</label><input type="text" required></div>
+                        <div class="input-group"><label>Courses</label><input type="text" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group"><label>Email</label><input type="email" required></div>
+                        <div class="input-group"><label>Contact</label><input type="text" required></div>
+                    </div>
+                    <button type="submit" class="save-btn">Save Lecturer</button>
+                </form>
+            </div>
+            <div class="vertical-divider"><span>OR</span></div>
+            <div class="bulk-upload-column">
+                <div class="upload-box">
+                    <div class="upload-icon">👥</div>
+                    <h3>Upload Staff List</h3>
+                    <button class="upload-trigger-btn">Select File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

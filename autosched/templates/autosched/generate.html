@@ -1,0 +1,25 @@
+{% extends "autoSched/base.html" %}
+{% load static%}
+
+{% block title%} AutoSched{% endblock%}
+
+{% block css_files%} 
+    <link rel="stylesheet" href="{% static 'autosched/index.css' %}" />
+{% endblock%}
+
+{% block body %}
+
+<h1>NAME OF INSTITUTION</H1>
+<h1>TIME TABLE FOR</h1>
+<h1>PROGRAMME: </h1>
+
+    <ul>
+        <li>Course Name</li>
+        <li>Course Code</li>
+        <li>Day</li>
+        <li>Time</li>
+        <li>Track</li>
+        <li>Venue</li>
+    </ul>
+    
+{% endblock%}

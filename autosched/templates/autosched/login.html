@@ -1,0 +1,54 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block title %}Login - AutoSched{% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/index.css' %}" />
+{% endblock %}
+
+{% block body %}
+<header id="main-navigation">
+    <h1><a href="{% url 'home' %}">AutoSched</a></h1>
+</header>
+
+<section id="login-overlay">
+    <div class="login-3d-card">
+        <a href="{% url 'home' %}" class="close-btn">&times;</a>
+
+        <div class="login-header">
+            <h2>Register / Sign in</h2>
+            <p class="protection-tag"><span>✔</span> Your information is protected</p>
+        </div>
+
+        <form method="POST" class="login-form-main">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <button type="submit" class="continue-btn">Continue</button>
+            <a href="#" class="trouble-link">Trouble signing in?</a>
+        </form>
+
+        <div class="divider">
+            <span>Or continue with</span>
+        </div>
+
+        <div class="social-icons">
+            <div class="social-circle google"><img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="G"></div>
+            </div>
+
+        <div class="location-picker">
+            <p>Location: <strong>Ghana</strong> <span>⌵</span></p>
+        </div>
+
+        <p class="terms-text">
+            By continuing, you confirm that you are an adult and have read and accepted our 
+            <a href="#">Membership Agreement</a> and <a href="#">Privacy Policy</a>.
+        </p>
+
+        <a href="#" class="location-help">Why choose a location?</a>
+    </div>
+</section>
+{% endblock %}
