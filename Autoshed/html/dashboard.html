@@ -1,0 +1,337 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/index.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>AutoSched</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="active"><span>📊</span> Dashboard</a>
+            <a href="#program-modal"><span>🏫</span> Program</a>
+            <a href="#department-modal"><span>🏫</span> Departments</a>
+            <a href="#course-modal"><span>📚</span> Courses</a>
+            <a href="#room-modal"><span>📍</span> Rooms</a>
+            <a href="#lecturer-modal"><span>👥</span> Lecturers</a>
+        </nav>
+    </aside>
+
+    <main class="main-portal">
+        <header class="portal-header">
+            <div class="welcome-msg">
+                <h2>Welcome Back, {{ user.firstname}} {{ user.lastname}}</h2>
+            </div>
+            <div class="user-profile">
+                <div class="dropdown-container" tabindex="0">
+                    <div class="avatar">{{ user.initials }}</div>
+                    <ul class="avatar-dropdown">
+                        <li><a href="#profile-modal"><span>👤</span> Profile</a></li>
+                        <li><a href="#settings-modal"><span>⚙️</span> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'home' %}" class="logout-link"><span>🚪</span> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-container">
+            <a href="#program-modal" class="stat-card clickable"><h3>Add Program</h3></a>
+            <a href="#department-modal" class="stat-card clickable"><h3>Add Department</h3></a>
+            <a href="#course-modal" class="stat-card clickable"><h3>Add Course</h3></a>
+            <a href="#room-modal" class="stat-card clickable"><h3>Add Rooms</h3></a>
+            <a href="#lecturer-modal" class="stat-card clickable"><h3>Add Lecturer</h3></a>
+            <a href="{% url 'generate' %}" class="stat-card clickable"><h3>Generate Timetable</h3></a>
+        </section>
+    </main>
+</div>
+
+<div id="program-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add Program</h2>
+            <p>Enter Program details below.</p>
+        </div>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Academic Level</label>
+                    <input type="text" name="_name" placeholder="Computer Science" required>
+                </div>
+                <div class="input-group">
+                    <label>Program Name</label>
+                    <input type="text" name="prog_name" placeholder="Business Administration" required>
+                </div>
+                <div class="input-group">
+                    <label>Specialization</label>
+                    <input type="text" name="prog_name" placeholder="Accounting" required>
+                </div>
+            </div>
+            <button type="submit" class="save-btn">Create Department</button>
+        </form>
+    </div>
+</div>
+
+<div id="department-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add Department</h2>
+            <p>Enter departmental details below.</p>
+        </div>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department Name</label>
+                    <input type="text" name="dept_name" placeholder="Computer Science" required>
+                </div>
+                <div class="input-group">
+                    <label>Short Name</label>
+                    <input type="text" name="dept_code" placeholder="CS" required>
+                </div>
+            </div>
+            <button type="submit" class="save-btn">Create Department</button>
+        </form>
+    </div>
+</div>
+
+<div id="course-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add New Course</h2>
+            <p>Register a course under a specific department.</p>
+        </div>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Course Name</label>
+                    <input type="text" name="course_name" placeholder="e.g. Advanced Calculus" required>
+                </div>
+                <div class="input-group">
+                    <label>Course Code</label>
+                    <input type="text" name="course_code" placeholder="e.g. MATH301" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department</label>
+                    <select name="department_name" required class="dynamic-select"> <!-- Changed from dept_id -->
+                        <option value="" disabled selected>-- Select Department --</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.department_name }}">{{ dept.department_name }}</option> <!-- Fixed: Use department_name -->
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Academic Level</label>
+                    <select name="academic_level" required>
+                        <option value="100">Level 100</option>
+                        <option value="200">Level 200</option>
+                        <option value="300">Level 300</option>
+                        <option value="400">Level 400</option>
+                        <option value="500">Level 500</option>
+                        <option value="600">Level 600</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Semester</label>
+                    <select name="semester" required>
+                        <option value="1">First Semester</option>
+                        <option value="2">Second Semester</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Program</label>
+                    <select name="program" required>
+                        <option value="">---</option>
+                        <option value="MSC">MSC</option>
+                        <option value="BSC">BSC</option>
+                        <option value="PHD">PHD</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Register Course</button>
+        </form>
+    </div>
+</div>
+
+<div id="room-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Add Room</h2>
+            <p>Register physical spaces and their seating capacities.</p>
+        </div>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Room Name / Number</label>
+                    <input type="text" name="room_name" placeholder="LT 101" required>
+                </div>
+                <div class="input-group">
+                    <label>Capacity</label>
+                    <input type="number" name="room_capacity" placeholder="50" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Assigned Faculty / Department</label>
+                <select name="department_name" required> <!-- Changed from room_dept -->
+                    <option value="" disabled selected>Select Department</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept.department_name }}">{{ dept.department_name }}</option> <!-- Fixed: Use department_name -->
+                    {% empty %}
+                        <option disabled>No departments saved yet</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="save-btn">Register Room</button>
+        </form>
+    </div>
+</div>
+
+<div id="lecturer-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Lecturer Profile</h2>
+            <p>Create a professional profile for faculty members.</p>
+        </div>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" name="lec_fname" placeholder="John" required>
+                </div>
+                <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lec_lname" placeholder="Doe" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department</label> <!-- Added missing department field -->
+                    <select name="lec_dept" required>
+                        <option value="" disabled selected>Select Department</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.department_name }}">{{ dept.department_name }}</option> <!-- Fixed: Use department_name -->
+                        {% empty %}
+                            <option disabled>No departments saved yet</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Course</label>
+                    <select name="lec_course" required>
+                        <option value="" disabled selected>Select Course</option>
+                        {% for course in courses %}
+                            <option value="{{ course.course_name }}">{{ course.course_name }} ({{ course.course_code }})</option>
+                        {% empty %}
+                            <option disabled>No courses saved yet</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" name="lec_email" placeholder="@university.edu" required>
+                </div>
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <input type="text" name="lec_contact" placeholder="+233..." required>
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save Lecturer Profile</button>
+        </form>
+    </div>
+</div>
+
+<div id="profile-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <div class="avatar-large">{{ user.initials }}</div>
+        </div>
+        <div class="modal-body-content">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <label>Full Name</label>
+                    <p>{{ user.firstname }} {{ user.lastname }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Email Address</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Contact Number</label>
+                    <p>{{ user.contact }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Institution</label>
+                    <p>{{ user.institution_name.name }}</p>
+                </div>
+                <div class="info-item">
+                    <label>System Role</label>
+                    <p class="role-tag">{{ user.user_role }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <h2>Account Settings</h2>
+            <p>Update your preferences and security.</p>
+        </div>
+        <form method="POST" action="{% url 'dashboard' %}" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Update Contact Number</label>
+                    <input type="text" name="new_contact" value="{{ user.contact }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" placeholder="Leave blank to keep current">
+                </div>
+            </div>
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,748 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'myapp/dashboard.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>AutoSched</h2>
+        </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard' %}" class="active"><span>📊</span> Dashboard</a>
+                <a href="#manage-modal" onclick="openManageTab('program')"><span>🏫</span> Program</a>
+                <a href="#manage-modal" onclick="openManageTab('department')"><span>🏢</span> Departments</a>
+                <a href="#manage-modal" onclick="openManageTab('course')"><span>📚</span> Courses</a>
+                <a href="#manage-modal" onclick="openManageTab('room')"><span>📍</span> Rooms</a>
+                <a href="#manage-modal" onclick="openManageTab('lecturer')"><span>👥</span> Lecturers</a>
+            </nav>
+    </aside>
+
+    <div id="manage-modal" class="modal-overlay">
+    <div class="modal-content glass-card management-hub">
+        <a href="#" class="close-modal">&times;</a>
+        
+        <header class="hub-header">
+            <h3 id="hub-title">Manage Data</h3>
+            <div class="hub-actions">
+                <form method="POST" enctype="multipart/form-data" class="bulk-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="upload_type" id="bulk-type-input">
+                </form>
+            </div>
+        </header>
+
+        <div class="hub-body">
+            <div class="table-container">
+                <table class="data-table" id="hub-table">
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <main class="main-portal">
+        <header class="portal-header">
+            <div class="welcome-msg">
+                <span class="date-badge">{% now "l, d F Y" %}</span>
+            </div>
+            
+            <div class="user-profile">
+                <div class="dropdown-container" tabindex="0">
+                    <div class="profile-trigger">
+                        <div class="user-meta">
+                            <span class="user-name">{{ user.first_name }} {{ user.last_name }}</span>
+                            <span class="user-role">Administrator</span>
+                        </div>
+                        <div class="avatar-circle">
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                        </div>
+                    </div>
+                    <ul class="avatar-dropdown">
+                        <li class="dropdown-header">Account Management</li>
+                        <li><a href="#profile-modal"><i class="icon">👤</i> My Profile</a></li>
+                        <li><a href="#settings-modal"><i class="icon">⚙️</i> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'login_view' %}" class="logout-link"><i class="icon">🚪</i> Sign Out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <div id="profile-modal" class="modal-overlay">
+            <div class="modal-content glass-card profile-card">
+                <a href="#" class="close-modal">&times;</a>
+                <div class="profile-hero">
+                    <div class="profile-banner"></div>
+                    <div class="avatar-container">
+                        <div class="avatar-ultra-large">{{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}</div>
+                    </div>
+                </div>
+
+        <form method="POST" action="{% url 'update_profile' %}" id="profile-form">
+            {% csrf_token %}
+            <div class="profile-header-main">
+                <div class="edit-group">
+                    <input type="text" name="first_name" value="{{ user.first_name }}" class="profile-input" readonly>
+                    <input type="text" name="last_name" value="{{ user.last_name }}" class="profile-input" readonly>
+                </div>
+                <p><span class="icon">🏛️</span> {{ user.institution.name|default:"AutoSched Global Institution" }}</p>
+            </div>
+
+            <div class="profile-details-grid">
+                <div class="detail-card">
+                    <label>Email Address</label>
+                    <input type="email" name="email" value="{{ user.email }}" class="profile-input" readonly>
+                </div>
+                <div class="detail-card">
+                    <label>Last Login</label>
+                    <div class="detail-value">{{ user.last_login|date:"M d, Y" }}</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="button" id="edit-profile-btn" class="edit-profile-btn">Edit Details</button>
+                <button type="submit" id="save-profile-btn" class="save-btn hidden">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Account Settings</h3></div>
+        
+        <div class="settings-container" style="padding: 20px;">
+            <form method="POST" action="{% url 'update_contact' %}">
+                {% csrf_token %}
+                <h4>Contact Details</h4>
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" value="{{ user.profile.phone }}" placeholder="+233...">
+                </div>
+                <button type="submit" class="save-btn" style="background: #3498db; width: 100%; margin-top: 10px;">Update Phone</button>
+            </form>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+            <form method="POST" action="{% url 'change_password' %}">
+                {% csrf_token %}
+                <h4>Security</h4>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" required>
+                </div>
+                <button type="submit" class="save-btn" style="background: #e67e22; width: 100%; margin-top: 10px;">Change Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<section class="stats-container">
+    <a href="#program-modal" class="stat-card clickable">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">🏫</span>
+        <h3>Add Program</h3>
+    </a>
+    <a href="#department-modal" class="stat-card clickable">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">🏢</span>
+        <h3>Add Dept</h3>
+    </a>
+    <a href="#course-modal" class="stat-card clickable">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">📚</span>
+        <h3>Add Course</h3>
+    </a>
+    <a href="#room-modal" class="stat-card clickable">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">📍</span>
+        <h3>Add Rooms</h3>
+    </a>
+    <a href="#lecturer-modal" class="stat-card clickable">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">👥</span>
+        <h3>Add Lecturer</h3>
+    </a>
+    <a href="{% url 'generate' %}" class="stat-card clickable generate-btn">
+        <span style="font-size: 1.5rem; margin-bottom: 8px;">⚡</span>
+        <h3>Generate</h3>
+    </a>
+    </section>
+
+
+    <div class="data-import-section">
+            <h3 class="section-title">Bulk File Upload</h3>
+
+            <div class="import-cards">
+                <div class="import-card secondary">
+                    <div class="import-icon">📥</div>
+                    <h4>Download Template</h4>
+                    <p>Download a ready-made Excel template for bulk uploads.</p>
+
+                    <a href="{% url 'download_template' %}" class="download-btn">
+                        Download Template
+                    </a>
+                </div>
+                <div class="import-card">
+                    <div class="import-icon">📤</div>
+                    <h4>Upload Data</h4>
+                    <p>Import programs, courses, rooms, or lecturers using Excel or CSV.</p>
+
+                    <form action="{% url 'upload_data' %}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        class="upload-form">
+                        {% csrf_token %}
+                        <label class="upload-btn">
+                            Upload File
+                            <input type="file"
+                                name="file"
+                                accept=".csv,.xlsx,.xls"
+                                hidden
+                                required
+                                onchange="this.form.submit()">
+                        </label>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+        
+    </main>
+    
+</div>
+
+
+
+<div id="manage-modal" class="modal-overlay">
+    <div class="modal-content glass-card management-hub">
+        <a href="#" class="close-modal">&times;</a>
+        
+        <header class="hub-header">
+            <h3 id="hub-title">Data Review</h3>
+            <div class="hub-search-container">
+                <input type="text" id="hub-search" placeholder="Search records..." onkeyup="filterHubTable()">
+            </div>
+        </header>
+
+        <div class="hub-body">
+            <div class="table-container">
+                <table class="data-table" id="hub-table">
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="program-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Program Mapping</h3></div>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Academic Level</label>
+                    <select name="academic_level_id" required>
+                        <option value="" disabled selected>Select Level</option>
+                        {% for level in levels %}
+                            <option value="{{ level.id }}">{{ level.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Main Program</label>
+                    <select name="main_program_id" required>
+                        <option value="" disabled selected>Select Discipline</option>
+                        {% for mp in main_programs %}
+                            <option value="{{ mp.id }}">{{ mp.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Specialization (Leave blank for Core)</label>
+                    <input type="text" name="specialization" placeholder="e.g. Cybersecurity">
+                    <small>Leave empty if this applies to all students in the program.</small>
+                </div>
+            </div>
+            <button type="submit" name="add_program" class="save-btn">Link Program & Level</button>
+        </form>
+    </div>
+</div>
+
+<div id="department-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Department Details</h3></div>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department Name</label>
+                    <input type="text" name="dept_name" placeholder="Computer Science" required>
+                </div>
+                <div class="input-group">
+                    <label>Short Code</label>
+                    <input type="text" name="dept_code" placeholder="CS" required>
+                </div>
+            </div>
+            <button type="submit" name="add_department" class="save-btn">Create Department</button>
+        </form>
+    </div>
+</div>
+
+<div id="course-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Register Course</h3></div>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Course Name</label>
+                    <input type="text" name="course_name" required>
+                </div>
+                <div class="input-group">
+                    <label>Course Code</label>
+                    <input type="text" name="course_code" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Course Category</label>
+                    <select name="course_type" required>
+                        <option value="CORE">Core (Mandatory for all)</option>
+                        <option value="SPEC">Specialization (Niche focus)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Link to Program</label>
+                    <select name="program_id" required>
+                        <option value="" disabled selected>Select Program</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}">
+                                {{ prog.main_program.name }} 
+                                {% if prog.specialization %}({{ prog.specialization }}){% else %}[CORE/GENERAL]{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department</label>
+                    <select name="department_id" required>
+                        <option value="" disabled selected>Select Dept</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.dept_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Semester</label>
+                    <select name="semester">
+                        <option value="1">First Semester</option>
+                        <option value="2">Second Semester</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Student Count</label>
+                    <input type="number" name="expected_students" placeholder="50" required>
+                </div>
+                <div class="input-group">
+                    <label>Credit Hours</label>
+                    <input type="number" name="credit_hours" value="3">
+                </div>
+            </div>
+            <input type="hidden" name="level_id" value="1"> 
+
+            <button type="submit" name="add_course" class="save-btn">Register Course</button>
+        </form>
+    </div>
+</div>
+
+<div id="room-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Register Room</h3></div>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Room Name</label>
+                    <input type="text" name="room_name" placeholder="Room 101" required>
+                </div>
+                <div class="input-group">
+                    <label>Seating Capacity</label>
+                    <input type="number" name="room_capacity" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Department</label>
+                <select name="department_id" required>
+                    {% for dept in departments %}
+                        <option value="{{ dept.id }}">{{ dept.dept_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" name="add_room" class="save-btn">Register Room</button>
+        </form>
+    </div>
+</div>
+
+<div id="lecturer-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header"><h3>Lecturer Profile</h3></div>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" name="lec_fname" required>
+                </div>
+                <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lec_lname" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Assigned Courses</label>
+                <select name="lec_courses" multiple required size="5">
+                    {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.course_code }} - {{ course.course_name }}</option>
+                    {% endfor %}
+                </select>
+                <small>Hold Ctrl (Win) / Cmd (Mac) to select multiple</small>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Department</label>
+                    <select name="department_id" required>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.dept_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="lec_email" required>
+                </div>
+                <div class="input-group">
+                    <label>Contact</label>
+                    <input type="text" name="lec_contact" required>
+                </div>
+            </div>
+
+            <button type="submit" name="add_lecturer" class="save-btn">Save Lecturer</button>
+        </form>
+    </div>
+</div>
+
+<div id="profile-modal" class="modal-overlay">
+    <div class="modal-content glass-card single-column-modal">
+        <a href="#" class="close-modal">&times;</a>
+        <div class="modal-header">
+            <div class="avatar-large">{{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}</div>
+            <h3>My Profile</h3>
+        </div>
+        <div class="modal-body-content">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <label>Full Name</label>
+                    <p>{{ user.first_name }} {{ user.last_name }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Email</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Institution</label>
+                    <p>{{ user.institution.name|default:"Not Set" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== MODAL HANDLING WITH Z-INDEX FIX ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to open modal
+    window.openModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Close any open modals first
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.style.display = 'none';
+            });
+            
+            // Show the modal
+            modal.style.display = 'flex';
+            
+            // Add class to body to prevent scrolling
+            document.body.classList.add('modal-open');
+            
+            // Force z-index recalculation
+            modal.style.zIndex = '9999';
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.zIndex = '10000';
+            }
+        }
+    };
+    
+    // Function to close modal
+    window.closeModal = function(modalElement) {
+        if (modalElement) {
+            modalElement.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+    };
+    
+    // Close modal when clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal(this);
+            }
+        });
+    });
+    
+    // Close modal with escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                if (modal.style.display === 'flex') {
+                    closeModal(modal);
+                }
+            });
+        }
+    });
+    
+    // Handle profile modal trigger
+    const profileTriggers = document.querySelectorAll('[href="#profile-modal"]');
+    profileTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('profile-modal');
+        });
+    });
+    
+    // Handle settings modal trigger
+    const settingsTriggers = document.querySelectorAll('[href="#settings-modal"]');
+    settingsTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('settings-modal');
+        });
+    });
+    
+    // Handle all close buttons
+    document.querySelectorAll('.close-modal').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = this.closest('.modal-overlay');
+            if (modal) {
+                closeModal(modal);
+            }
+        });
+    });
+});
+function openManageTab(type) {
+    const title = document.getElementById('hub-title');
+    const table = document.getElementById('hub-table');
+    const bulkInput = document.getElementById('bulk-type-input');
+    
+    // Set the hidden input for the CSV upload form
+    bulkInput.value = type;
+    title.innerText = "Review " + type.charAt(0).toUpperCase() + type.slice(1) + "s";
+    
+    let html = "";
+
+    if (type === 'course') {
+        html = `<thead><tr><th>Code</th><th>Course Name</th><th>Students</th><th>Credits</th></tr></thead><tbody>`;
+        {% for course in courses %}
+        html += `<tr>
+            <td><strong>{{ course.course_code }}</strong></td>
+            <td>{{ course.course_name }}</td>
+            <td>{{ course.expected_students }}</td>
+            <td>{{ course.credit_hours }}</td>
+        </tr>`;
+        {% endfor %}
+    } 
+    else if (type === 'department') {
+        html = `<thead><tr><th>Code</th><th>Department Name</th></tr></thead><tbody>`;
+        {% for dept in departments %}
+        html += `<tr>
+            <td><strong>{{ dept.dept_code }}</strong></td>
+            <td>{{ dept.dept_name }}</td>
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'room') {
+        html = `<thead><tr><th>Room</th><th>Capacity</th><th>Department</th></tr></thead><tbody>`;
+        {% for room in rooms %}
+        html += `<tr>
+            <td><strong>{{ room.room_name }}</strong></td>
+            <td>{{ room.room_capacity }}</td>
+            <td>{{ room.department.dept_name }}</td>
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'lecturer') {
+        html = `<thead><tr><th>Name</th><th>Email</th><th>Contact</th></tr></thead><tbody>`;
+        {% for lec in lecturers %}
+        html += `<tr>
+            <td><strong>{{ lec.lec_fname }} {{ lec.lec_lname }}</strong></td>
+            <td>{{ lec.lec_email }}</td>
+            <td>{{ lec.lec_contact }}</td>
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'program') {
+        html = `<thead><tr><th>Program</th><th>Specialization</th><th>Level</th></tr></thead><tbody>`;
+        {% for prog in programs %}
+        html += `<tr>
+            <td><strong>{{ prog.main_program.name }}</strong></td>
+            <td>{{ prog.specialization|default:"Core" }}</td>
+            <td>{{ prog.academic_level.name }}</td>
+        </tr>`;
+        {% endfor %}
+    }
+    
+    html += `</tbody>`;
+    table.innerHTML = html;
+}
+</script>
+<script>
+// --- Toggle Profile Edit Mode ---
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+    const inputs = document.querySelectorAll('.profile-input');
+    const saveBtn = document.getElementById('save-profile-btn');
+    const isReadOnly = inputs[0].hasAttribute('readonly');
+
+    if (isReadOnly) {
+        inputs.forEach(i => {
+            i.removeAttribute('readonly');
+            i.classList.add('editing');
+        });
+        this.innerText = "Cancel";
+        this.style.background = "#95a5a6";
+        saveBtn.classList.remove('hidden');
+    } else {
+        inputs.forEach(i => {
+            i.setAttribute('readonly', true);
+            i.classList.remove('editing');
+        });
+        this.innerText = "Edit Details";
+        this.style.background = ""; 
+        saveBtn.classList.add('hidden');
+    }
+});
+
+// --- Management Hub Tab Switcher ---
+function openManageTab(type) {
+    const title = document.getElementById('hub-title');
+    const table = document.getElementById('hub-table');
+    const bulkInput = document.getElementById('bulk-type-input');
+    
+    if(bulkInput) bulkInput.value = type;
+    title.innerText = "Review " + type.charAt(0).toUpperCase() + type.slice(1) + "s";
+    
+    let html = "";
+    // Helper to generate Action Buttons
+    const actionBtns = (id, deleteUrlName) => `
+        <td class="table-actions">
+            <button onclick="editRecord('${type}', ${id})" class="btn-edit" title="Edit">✏️</button>
+            <button onclick="deleteRecord('${type}', ${id})" class="btn-delete" title="Delete">🗑️</button>
+        </td>`;
+
+    if (type === 'course') {
+        html = `<thead><tr><th>Code</th><th>Course Name</th><th>Students</th><th>Actions</th></tr></thead><tbody>`;
+        {% for course in courses %}
+        html += `<tr>
+            <td><strong>{{ course.course_code }}</strong></td>
+            <td>{{ course.course_name }}</td>
+            <td>{{ course.expected_students }}</td>
+            ${actionBtns({{ course.id }})}
+        </tr>`;
+        {% endfor %}
+    } 
+    else if (type === 'department') {
+        html = `<thead><tr><th>Code</th><th>Name</th><th>Actions</th></tr></thead><tbody>`;
+        {% for dept in departments %}
+        html += `<tr>
+            <td><strong>{{ dept.dept_code }}</strong></td>
+            <td>{{ dept.dept_name }}</td>
+            ${actionBtns({{ dept.id }})}
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'room') {
+        html = `<thead><tr><th>Room</th><th>Cap</th><th>Dept</th><th>Actions</th></tr></thead><tbody>`;
+        {% for room in rooms %}
+        html += `<tr>
+            <td><strong>{{ room.room_name }}</strong></td>
+            <td>{{ room.room_capacity }}</td>
+            <td>{{ room.department.dept_name }}</td>
+            ${actionBtns({{ room.id }})}
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'lecturer') {
+        html = `<thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>`;
+        {% for lec in lecturers %}
+        html += `<tr>
+            <td><strong>{{ lec.lec_fname }} {{ lec.lec_lname }}</strong></td>
+            <td>{{ lec.lec_email }}</td>
+            ${actionBtns({{ lec.id }})}
+        </tr>`;
+        {% endfor %}
+    }
+    else if (type === 'program') {
+        html = `<thead><tr><th>Program</th><th>Specialization</th><th>Actions</th></tr></thead><tbody>`;
+        {% for prog in programs %}
+        html += `<tr>
+            <td><strong>{{ prog.main_program.name }}</strong></td>
+            <td>{{ prog.specialization|default:"Core" }}</td>
+            ${actionBtns({{ prog.id }})}
+        </tr>`;
+        {% endfor %}
+    }
+    
+    table.innerHTML = html + `</tbody>`;
+}
+
+// New Handlers
+function deleteRecord(type, id) {
+    if (confirm(`Are you sure you want to delete this ${type}?`)) {
+        // Construct URL dynamically: e.g., /delete/course/5/
+        window.location.href = `/delete-${type}/${id}/`;
+    }
+}
+
+function editRecord(type, id) {
+    // This typically redirects to a pre-filled form page
+    window.location.href = `/edit-${type}/${id}/`;
+}
+
+// --- Search Filter ---
+function filterHubTable() {
+    let input = document.getElementById("hub-search").value.toUpperCase();
+    let rows = document.querySelectorAll("#hub-table tbody tr");
+    rows.forEach(r => r.style.display = r.innerText.toUpperCase().includes(input) ? "" : "none");
+}
+</script>
+{% endblock %}

@@ -1,0 +1,1134 @@
+/* login.css - SMOKEY WHITE GLASSMORPHIC LOGIN DESIGN */
+
+:root {
+    --primary-glow: #4f46e5;
+    --secondary-glow: #8b5cf6;
+    --accent-glow: #06b6d4;
+    --neon-blue: #3b82f6;
+    --neon-purple: #8b5cf6;
+    --neon-cyan: #06b6d4;
+    --glass-white: rgba(255, 255, 255, 0.65);
+    --glass-white-dark: rgba(255, 255, 255, 0.55);
+    --glass-border-light: rgba(255, 255, 255, 0.6);
+    --glass-border-dark: rgba(0, 0, 0, 0.08);
+    --text-dark: #1a2c3e;
+    --text-muted: #5a6e8a;
+    --bg-smoke: #f5f7fb;
+    --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#login-overlay {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Smokey white/grey gradient background */
+    background: linear-gradient(135deg, #f5f7fb 0%, #eef2f6 50%, #e8ecf0 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Smokey Mist Layer */
+#login-overlay::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
+    animation: smokeFloat 30s ease-in-out infinite;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+/* Subtle Grid Pattern */
+#login-overlay::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    opacity: 0.3;
+}
+
+/* Floating Smoke Particles */
+.smoke-particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFloat random(15s, 25s) ease-in-out infinite;
+    z-index: 0;
+}
+
+/* --- GLASS CARD - WHITE THEME --- */
+.login-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    width: 90%;
+    max-width: 420px;
+    max-height: 90vh;
+    padding: 2.5rem;
+    border-radius: 28px;
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--glass-border-light);
+    color: var(--text-dark);
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 0 30px rgba(59, 130, 246, 0.1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.login-card::-webkit-scrollbar {
+    display: none;
+}
+
+/* Glass Card Inner Glow */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(79, 70, 229, 0.05) 0%,
+        rgba(139, 92, 246, 0.05) 50%,
+        rgba(6, 182, 212, 0.05) 100%);
+    border-radius: 28px;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* Subtle Border Glow */
+.login-card::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    border-radius: 27px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.6) 100%);
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: var(--transition);
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border-light);
+}
+
+.close-btn:hover { 
+    color: var(--neon-blue);
+    background: white;
+    transform: rotate(90deg);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+/* Header */
+.login-header {
+    position: relative;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.login-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, 
+        #1e293b 0%,
+        var(--neon-blue) 50%,
+        #1e293b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.3px;
+    position: relative;
+}
+
+.login-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        var(--neon-blue), 
+        transparent);
+    border-radius: 2px;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+}
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-form-main input {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--glass-border-dark);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    transition: var(--transition);
+    font-family: 'Inter', sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+}
+
+.login-form-main input:focus {
+    outline: none;
+    border-color: var(--neon-blue);
+    background: white;
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+.login-form-main input::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: 300;
+    font-size: 0.9rem;
+}
+
+/* Input Icon Animation */
+.form-group::after {
+    content: '→';
+    position: absolute;
+    right: 18px;
+    top: 38px;
+    color: rgba(0, 0, 0, 0.2);
+    font-size: 1.1rem;
+    transition: var(--transition);
+    opacity: 0.5;
+}
+
+.form-group:focus-within::after {
+    color: var(--neon-blue);
+    transform: translateX(5px);
+    opacity: 1;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 0.95rem;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent);
+    transition: left 0.6s ease;
+    z-index: -1;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, 
+        var(--primary-glow) 0%, 
+        var(--secondary-glow) 50%, 
+        var(--accent-glow) 100%);
+    color: white;
+    margin-top: 1.8rem;
+    box-shadow: 
+        0 6px 20px rgba(79, 70, 229, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover { 
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 28px rgba(79, 70, 229, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text-dark);
+    border: 1px solid var(--glass-border-dark);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.btn-secondary:hover { 
+    background: white;
+    border-color: var(--neon-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Links */
+.reset {
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
+.reset-link {
+    font-size: 0.85rem;
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+    position: relative;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.reset-link:hover {
+    color: var(--primary-glow);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 6px 16px;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 2rem 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--glass-border-dark);
+}
+
+.divider span {
+    padding: 0 1rem;
+}
+
+/* Footer */
+.login-footer {
+    margin-top: 1.8rem;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+    padding: 0 0.5rem;
+}
+
+.login-footer a { 
+    color: var(--neon-blue); 
+    font-weight: 600; 
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.login-footer a:hover { 
+    color: var(--primary-glow);
+}
+
+/* --- SIGN UP CARD --- */
+.login-3d-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px) saturate(180%);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    padding: 2.5rem;
+    border-radius: 28px;
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 0 30px rgba(59, 130, 246, 0.1);
+    border: 1px solid var(--glass-border-light);
+    position: relative;
+    color: var(--text-dark);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.login-3d-card::-webkit-scrollbar {
+    display: none;
+}
+
+/* Sign Up Card Inner Glow */
+.login-3d-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    border-radius: 28px;
+    z-index: -1;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Input Rows */
+.input-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.input-row > * {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Sign Up Inputs */
+.signup-form-main input,
+.signup-form-main select {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    margin-bottom: 1.2rem;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border-dark);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    font-family: 'Inter', sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+}
+
+.signup-form-main input:focus,
+.signup-form-main select:focus {
+    outline: none;
+    border-color: var(--neon-blue);
+    background: white;
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+.signup-form-main input::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+/* Select Dropdown */
+.signup-form-main select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+    padding-right: 3rem;
+    cursor: pointer;
+}
+
+.signup-form-main select:hover {
+    background-color: white;
+}
+
+/* Continue Button */
+.continue-btn {
+    width: 100%;
+    padding: 0.95rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, 
+        var(--primary-glow) 0%, 
+        var(--secondary-glow) 50%, 
+        var(--accent-glow) 100%);
+    color: white;
+    transition: var(--transition);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-sizing: border-box;
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+}
+
+.continue-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.25), 
+        transparent);
+    transition: left 0.6s ease;
+    z-index: -1;
+}
+
+.continue-btn:hover::before {
+    left: 100%;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(79, 70, 229, 0.35);
+}
+
+/* --- GLASS CARD GENERIC --- */
+.glass-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    width: 90%;
+    max-width: 420px;
+    max-height: 90vh;
+    padding: 2.5rem;
+    border-radius: 28px;
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--glass-border-light);
+    color: var(--text-dark);
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-sizing: border-box;
+}
+
+.glass-card::-webkit-scrollbar {
+    display: none;
+}
+
+.glass-card h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, 
+        #1e293b 0%,
+        var(--neon-blue) 50%,
+        #1e293b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.3px;
+}
+
+.glass-card p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Input Groups */
+.input-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.signup-input {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border-dark);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    font-family: 'Inter', sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+}
+
+.signup-input:focus {
+    outline: none;
+    border-color: var(--neon-blue);
+    background: white;
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Save Button */
+.save-btn {
+    width: 100%;
+    padding: 0.95rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, 
+        var(--primary-glow) 0%, 
+        var(--secondary-glow) 50%, 
+        var(--accent-glow) 100%);
+    color: white;
+    transition: var(--transition);
+    margin-top: 1.2rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.save-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.25), 
+        transparent);
+    transition: left 0.6s ease;
+    z-index: -1;
+}
+
+.save-btn:hover::before {
+    left: 100%;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(79, 70, 229, 0.35);
+}
+
+/* Error States */
+.errorlist {
+    color: #dc2626;
+    list-style: none;
+    font-size: 0.8rem;
+    padding: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: left;
+    background: rgba(220, 38, 38, 0.05);
+    border-radius: 12px;
+    border-left: 3px solid #dc2626;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+/* Searchable Dropdown */
+.ts-control {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 1px solid var(--glass-border-dark) !important;
+    border-radius: 14px !important;
+    color: var(--text-dark) !important;
+    padding: 0.9rem 1.2rem !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+}
+
+.ts-dropdown {
+    background: white !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--glass-border-dark) !important;
+    border-radius: 14px !important;
+    color: var(--text-dark) !important;
+    margin-top: 8px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ts-dropdown .option {
+    color: var(--text-dark) !important;
+    padding: 0.8rem 1.2rem !important;
+    border-bottom: 1px solid var(--glass-border-dark) !important;
+    transition: var(--transition) !important;
+}
+
+.ts-dropdown .active {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: var(--neon-blue) !important;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes smokeFloat {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.5;
+    }
+    33% {
+        transform: translate(2%, 1%) scale(1.02);
+        opacity: 0.7;
+    }
+    66% {
+        transform: translate(-1%, 2%) scale(0.98);
+        opacity: 0.4;
+    }
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.3;
+    }
+    80% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(50px);
+        opacity: 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-5px) scale(1.002);
+    }
+}
+
+/* Floating Animation */
+.login-card, .login-3d-card, .glass-card {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Loading State */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+    #login-overlay {
+        padding: 10px;
+    }
+    
+    .login-card, .login-3d-card, .glass-card {
+        padding: 2rem;
+        border-radius: 24px;
+        max-height: 85vh;
+    }
+    
+    .login-header h2, .glass-card h2 {
+        font-size: 1.8rem;
+    }
+    
+    .input-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .close-btn {
+        top: 15px;
+        right: 15px;
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .btn-primary {
+        margin-top: 1.5rem;
+    }
+    
+    .divider {
+        margin: 1.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    #login-overlay {
+        padding: 5px;
+    }
+    
+    .login-card, .login-3d-card, .glass-card {
+        padding: 1.5rem;
+        border-radius: 20px;
+        max-height: 80vh;
+    }
+    
+    .login-header h2, .glass-card h2 {
+        font-size: 1.6rem;
+    }
+    
+    .login-header p, .glass-card p {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .login-form-main input,
+    .signup-form-main input,
+    .signup-form-main select,
+    .signup-input {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn, .continue-btn, .save-btn {
+        padding: 0.85rem;
+        font-size: 0.9rem;
+    }
+    
+    .close-btn {
+        top: 12px;
+        right: 12px;
+    }
+}
+
+/* Height-based adjustments */
+@media (min-height: 800px) {
+    .login-card, .login-3d-card, .glass-card {
+        padding: 3rem;
+        border-radius: 32px;
+    }
+    
+    .login-header h2, .glass-card h2 {
+        font-size: 2.2rem;
+    }
+}
+
+/* Prevent scrolling on body */
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Add to login.css - Smoke Background Elements */
+.smoke-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.smoke {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: blur(80px);
+    pointer-events: none;
+}
+
+.smoke-1 {
+    position: absolute;
+    top: -20%;
+    left: -15%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smokeDrift 28s ease-in-out infinite;
+}
+
+.smoke-2 {
+    position: absolute;
+    bottom: -25%;
+    right: -15%;
+    width: 85%;
+    height: 85%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smokeDrift 35s ease-in-out infinite reverse;
+}
+
+.smoke-3 {
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smokeDrift 22s ease-in-out infinite;
+}
+
+.smoke-4 {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smokeDrift 40s ease-in-out infinite;
+}
+
+.smoke-5 {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    width: 65%;
+    height: 65%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smokeDrift 32s ease-in-out infinite reverse;
+}
+
+.mist-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes smokeDrift {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.4;
+    }
+    33% {
+        transform: translate(3%, 2%) scale(1.08);
+        opacity: 0.6;
+    }
+    66% {
+        transform: translate(-2%, 4%) scale(0.95);
+        opacity: 0.3;
+    }
+}
+
+/* Alert Message Styling */
+.messages-container {
+    margin-bottom: 1.5rem;
+}
+
+.alert-message {
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    margin-bottom: 0.75rem;
+}
+
+.alert-message:last-child {
+    margin-bottom: 0;
+}
+
+.alert-error {
+    background: rgba(220, 38, 38, 0.1);
+    border-left: 3px solid #dc2626;
+    color: #991b1b;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border-left: 3px solid #22c55e;
+    color: #166534;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+    color: #1e40af;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid #f59e0b;
+    color: #92400e;
+}
+
+/* Button with Arrow */
+.btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.btn-arrow {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover .btn-arrow {
+    transform: translateX(4px);
+}
+
+.btn-text {
+    font-weight: 600;
+}
+
+/* Secondary Button as Link */
+a.btn-secondary {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text-dark);
+    border: 1px solid var(--glass-border-dark);
+    backdrop-filter: blur(10px);
+    padding: 0.95rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+a.btn-secondary:hover {
+    background: white;
+    border-color: var(--neon-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+}
+
+/* Footer Link Styling */
+.footer-link {
+    color: var(--neon-blue);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-link:hover {
+    color: var(--primary-glow);
+    text-decoration: underline;
+}

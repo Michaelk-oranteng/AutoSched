@@ -1,0 +1,226 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+
+{% block title %} Generate Timetable | AutoSched {% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'myapp/generate.css' %}" />
+    <style>
+        .btn-generate-main.loading {
+            opacity: 0.7;
+            pointer-events: none;
+            cursor: wait;
+        }
+        .btn-generate-main.loading::after {
+            content: " GENERATING...";
+        }
+        .sidebar-link-reset {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
+        }
+        .sidebar-link-reset:hover {
+            color: #2196f3;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-wrapper">
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <h2>AutoSched</h2>
+    </div>
+    
+<nav class="sidebar-nav">
+    <a href="{% url 'dashboard' %}"><span>📊</span> Dashboard</a>
+    <a href="#" class="active"><span>📅</span> View Timetable</a>
+    
+    <form method="GET" class="sidebar-form" id="unifiedFilterForm">
+        
+        <div class="sidebar-section">
+            <h3 class="sidebar-heading">Filters</h3>
+            
+            <div class="sidebar-input-group" style="margin-bottom: 1rem;">
+                <label for="level">Academic Level</label>
+                <select name="level" class="sidebar-select" onchange="this.form.submit()">
+                    <option value="">-- All Levels --</option>
+                    {% for level in levels %}
+                        <option value="{{ level.id }}" {% if selected_level == level.id|stringformat:"s" %}selected{% endif %}>
+                            {{ level.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="sidebar-input-group" style="margin-bottom: 1rem;">
+                <label for="program">Select Program</label>
+                <select name="program" class="sidebar-select" onchange="this.form.submit()">
+                    <option value="" disabled selected>-- Select Program --</option>
+                    {% for main_prog in available_programs %}
+                        <option value="{{ main_prog.id }}" {% if selected_program == main_prog.id|stringformat:"s" %}selected{% endif %}>
+                            {{ main_prog.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3 class="sidebar-heading">Date Range</h3>
+            
+            <div class="sidebar-input-group">
+                <label for="start">Start Date</label>
+                <input type="date" name="start" class="sidebar-date-input" value="{{ start_date }}">
+            </div>
+            
+            <div class="sidebar-input-group">
+                <label for="end">End Date</label>
+                <input type="date" name="end" class="sidebar-date-input" value="{{ end_date }}">
+            </div>
+            
+            <button type="submit" class="sidebar-btn"><span>📅</span> Apply All Filters</button>
+            <a href="{% url 'generate' %}" class="sidebar-link-reset">Reset All Filters</a>
+        </div>
+    </form>
+    </nav>
+</aside>
+
+    <section class="timetable-results-expanded">
+        {% if messages %}
+            <div class="messages-container" style="padding: 1rem;">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="padding: 10px; margin-bottom: 10px; border-radius: 4px; background: #e3f2fd; border-left: 5px solid #2196f3;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="timetable-meta">
+            <h1 class="institution-title">
+                {{ user.institution.name|upper|default:"UNIVERSITY NOT CONFIGURED" }}
+            </h1>
+            
+            <h2 class="program-title">
+                {% if current_program_obj %}
+                    {{ current_program_obj.academic_level.name }} - {{ current_program_obj.main_program.name }}
+                    {% if selected_spec %} ({{ selected_spec }}){% endif %}
+                {% else %}
+                    Select an Academic Level and Program
+                {% endif %}
+            </h2>
+            
+            <div class="session-info">
+                <h3 class="neon-text">
+                    TIMETABLE FOR 
+                    {% if formatted_start_date and formatted_end_date %}({{ formatted_start_date }} - {{ formatted_end_date }}){% else %}(CURRENT ACADEMIC SESSION){% endif %}
+                </h3>
+            </div>
+        </div>
+
+        <div class="table-responsive-wrapper">
+             <table class="full-width-timetable">
+                <thead>
+                    <tr>
+                        <th>PROGRAM</th>
+                        <th>SEMESTER</th>
+                        <th>COURSE CODE</th>
+                        <th>COURSE NAME</th>
+                        <th>DAY</th>
+                        <th>TIME</th>
+                        <th>VENUE</th>
+                        <th>LECTURER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in timetable_slots %}
+                    <tr class="timetable-row">
+                        <td class="program-cell">
+                            <strong>{{ slot.program.main_program.name }}</strong>
+                        </td>
+                        <td><span class="semester-badge">{{ slot.semester }}</span></td>
+                        <td class="course-code-cell">{{ slot.course_code }}</td>
+                        <td>{{ slot.course_name }}</td>
+                        <td>{% if slot.assigned_day %}<span class="day-badge">{{ slot.assigned_day }}</span>{% else %}<span class="tbd-label">TBD</span>{% endif %}</td>
+                        <td>{% if slot.assigned_time %}<span class="time-label">{{ slot.assigned_time }}</span>{% else %}<span class="tbd-label">TBD</span>{% endif %}</td>
+                        <td>{% if slot.assigned_venue %}<span class="venue-badge">{{ slot.assigned_venue }}</span>{% else %}<span class="tbd-label">TBD</span>{% endif %}</td>
+                        <td class="lecturer-name">
+                            {% for lec in slot.lecturers %}
+                                {{ lec.lec_fname }} {{ lec.lec_lname }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                <span class="no-data">No Lecturer</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-state-cell"> 
+                            {% if not selected_program %}
+                                👈 Please select an Academic Level and Program from the sidebar
+                            {% else %}
+                                No courses found for this selection.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="generate-cta-card">
+            <form action="{% url 'run_timetable_engine' %}" method="POST" id="engineForm">
+                {% csrf_token %}
+                <input type="hidden" name="program_name" value="{{ selected_program }}">
+                <input type="hidden" name="level_id" value="{{ selected_level }}">
+                <input type="hidden" name="specialization" value="{{ selected_spec }}">
+                <input type="hidden" name="start_date" id="hidden_start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" id="hidden_end_date" value="{{ end_date }}">
+
+                <button type="submit" id="generateBtn" class="btn-generate-main" {% if not current_program_obj %}disabled{% endif %}>
+                    <span>🚀</span> Generate Timetable
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+<div id="loading-overlay">
+    <div class="spinner-border text-primary" role="status"></div>
+    <h3 class="mt-3">Evolving the Best Timetable...</h3>
+    <p>This may take a few seconds.</p>
+</div>
+
+<script>
+    // Show overlay when the form is submitted
+    document.querySelector('form[action*="run_timetable_engine"]').onsubmit = function() {
+        document.getElementById('loading-overlay').style.display = 'block';
+    };
+</script>
+
+<script>
+    // Keep this script in your template to sync the POST form with your new sidebar inputs
+document.getElementById('engineForm').addEventListener('submit', function(e) {
+    // We grab the values from our new unified sidebar inputs
+    const startDate = document.querySelector('input[name="start"]').value;
+    const endDate = document.querySelector('input[name="end"]').value;
+    
+    document.getElementById('hidden_start_date').value = startDate;
+    document.getElementById('hidden_end_date').value = endDate;
+});
+    document.getElementById('engineForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('generateBtn');
+        
+        // Final sync of date values just before submission
+        const startDate = document.getElementById('sidebar_start_date').value;
+        const endDate = document.getElementById('sidebar_end_date').value;
+        
+        document.getElementById('hidden_start_date').value = startDate;
+        document.getElementById('hidden_end_date').value = endDate;
+        
+        btn.classList.add('loading');
+    });
+</script>
+{% endblock %}

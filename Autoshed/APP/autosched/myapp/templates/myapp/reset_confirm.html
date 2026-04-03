@@ -1,0 +1,33 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'myapp/login.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="login-container"> <div class="glass-card">
+        <h2>Set New Password</h2>
+        <p>Please enter your new password below.</p>
+        
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="input-group">
+                <label>New Password</label>
+                <input type="password" name="new_password" required class="signup-input">
+            </div>
+
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" required class="signup-input">
+            </div>
+            <button type="submit" class="save-btn">Update Password</button>
+        </form>
+
+        <div style="margin-top: 20px;">
+    <a href="{% url 'login_view' %}" style="color: #888; text-decoration: none; font-size: 0.85rem;">
+        &larr; Back to Login
+    </a>
+</div>
+    </div>
+</div>
+{% endblock %}

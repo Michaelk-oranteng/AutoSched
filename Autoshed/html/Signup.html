@@ -1,0 +1,48 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block title %}Sign Up - AutoSched{% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/login.css' %}" />
+{% endblock %}
+
+{% block body %}
+
+<section id="login-overlay">
+    <div class="login-3d-card">
+        <a href="{% url 'home' %}" class="close-btn">&times;</a>
+        <div class="login-header">
+            <h2>Create a new account</h2>
+            <p>It's quick and easy.</p>
+        </div>
+        <div class="divider"><span></span></div>
+        <form action="" method="POST" class="signup-form-main">
+            {% csrf_token %}
+
+            <div class="input-row">
+                {{ form.first_name }}
+                {{ form.last_name }}
+            </div>
+
+            <div class="input-row">
+                {{ form.email }}
+                {{ form.contact }}
+            </div>
+
+            {{ form.institution }}
+
+            <div class="input-row">
+                {{ form.password }}
+                {{ form.confirm_password }}
+            </div>
+            
+            <button type="submit" class="continue-btn" style="margin-top:10px;">Create new account</button>
+        </form>
+        <div class="divider"><span>OR</span></div>
+        <a href="{% url 'login' %}">
+            <button type="button" class="continue-btn" style="background:rgba(255,255,255,0.05); color:white;">Already have an account?</button>
+        </a>
+    </div>
+</section>
+{% endblock %}

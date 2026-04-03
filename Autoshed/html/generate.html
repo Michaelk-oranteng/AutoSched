@@ -1,0 +1,186 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block title %} Generate Timetable | AutoSched {% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/index.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>AutoSched</h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}"><span>📊</span> Dashboard</a>
+            <a href="#" class="active"><span>📅</span> View Timetable</a>
+            
+            <!-- PROGRAM SELECTOR IN SIDEBAR -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-heading">Select Program</h3>
+                <form method="GET" class="sidebar-form">
+                    <select name="program" class="sidebar-select" onchange="this.form.submit()">
+                        <option value="">-- Select Program --</option>
+                        {% if available_programs %}
+                            {% for program in available_programs %}  <!-- No count variable -->
+                                <option value="{{ program }}" {% if selected_program == program %}selected{% endif %}>
+                                    {{ program }}  <!-- No (count courses) -->
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option disabled>No programs in database yet</option>
+                        {% endif %}
+                    </select>
+                </form>
+            </div>
+            
+            <!-- DATE RANGE SELECTOR IN SIDEBAR -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-heading">Date Range</h3>
+                <form method="GET" class="sidebar-form">
+                    {% if selected_program %}
+                        <input type="hidden" name="program" value="{{ selected_program }}">
+                    {% endif %}
+                    
+                    <div class="sidebar-input-group">
+                        <label for="start_date">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="sidebar-date-input" 
+                               value="{{ request.GET.start_date }}">
+                    </div>
+                    
+                    <div class="sidebar-input-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="sidebar-date-input" 
+                               value="{{ request.GET.end_date }}">
+                    </div>
+                    
+                    <button type="submit" class="sidebar-btn">
+                        <span>📅</span> Apply Range
+                    </button>
+                    
+                    {% if formatted_start_date and formatted_end_date %}
+                    <div class="current-range">
+                        <small>Current: {{ formatted_start_date }} - {{ formatted_end_date }}</small>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+            
+            <!-- QUICK ACTION BUTTONS -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-heading">Actions</h3>
+                <button onclick="window.print()" class="sidebar-btn print-btn">
+                    <span>🖨️</span> Print Timetable
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-portal full-screen-portal">
+        <header class="portal-header">
+            <div class="welcome-msg">
+                <h3>Academic Timetable</h3>
+                <p>View and manage course schedules</p>
+            </div>
+            <div class="user-profile">
+                <div class="dropdown-container" tabindex="0">
+                    <div class="avatar">{{ user.initials }}</div>
+                    <ul class="avatar-dropdown">
+                        <li><a href="#profile-modal"><span>👤</span> Profile</a></li>
+                        <li><a href="#settings-modal"><span>⚙️</span> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'home' %}" class="logout-link"><span>🚪</span> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <section class="timetable-results-expanded">
+            <div class="timetable-meta">
+                <!-- INSTITUTION NAME -->
+                <h1 class="institution-title">
+                    {% if user.institution_name and user.institution_name.name %}
+                        {{ user.institution_name.name|upper }}
+                    {% else %}
+                        YOUR INSTITUTION NAME
+                    {% endif %}
+                </h1>
+                
+                <!-- SELECTED PROGRAM -->
+                {% if selected_program %}
+                    <h2 class="program-title">{{ selected_program }}</h2>
+                {% else %}
+                    <h2 class="program-title">Select a Program from the Sidebar</h2>
+                {% endif %}
+                
+                <!-- CURRENT SESSION INFO -->
+                <div class="session-info">
+                    <h3 class="neon-text">
+                        TIMETABLE FOR
+                        {% if formatted_start_date and formatted_end_date %}
+                            ({{ formatted_start_date }} - {{ formatted_end_date }})
+                        {% else %}
+                            (CURRENT ACADEMIC SESSION)
+                        {% endif %}
+                    </h3>
+                </div>
+                
+                <!-- COURSE COUNT INFO -->
+                {% if selected_program %}
+                    <div class="course-count">
+                        <span class="count-badge">{{ timetable_slots|length }} courses found</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- TIMETABLE TABLE -->
+            <div class="table-responsive-wrapper">
+                <table class="full-width-timetable">
+                    <thead>
+                        <tr>
+                            <th>SEMESTER</th>
+                            <th>COURSE CODE</th>
+                            <th>COURSE NAME</th>
+                            <th>DAY</th>
+                            <th>TIME</th>
+                            <th>VENUE</th>
+                            <th>LECTURER</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in timetable_slots %}
+                        <tr class="timetable-row">
+                            <td><span class="semester-badge">{{ slot.semester }}</span></td>
+                            <td class="course-code-cell">{{ slot.course_code }}</td>
+                            <td>{{ slot.course_name }}</td>
+                            <td>{{ slot.day }}</td>
+                            <td>{{ slot.time }}</td>
+                            <td><span class="venue-badge">{{ slot.venue }}</span></td>
+                            <td class="lecturer-name">{{ slot.lecturer }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state-cell">
+                                {% if selected_program %}
+                                    📭 No courses scheduled for <strong>{{ selected_program }}</strong>
+                                    {% if formatted_start_date and formatted_end_date %}
+                                        between {{ formatted_start_date }} - {{ formatted_end_date }}
+                                    {% endif %}
+                                {% else %}
+                                    👈 Please select a program from the sidebar
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+
+{% endblock %}

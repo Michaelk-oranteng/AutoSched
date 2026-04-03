@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Timetable | {{ institution }}</title>
+    <style>
+        /* Modern, Professional Clean Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif; 
+            padding: 40px 10%; 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            line-height: 1.5;
+        }
+
+        /* Container for the page */
+        .page-container {
+            background-color: white;
+            padding: 60px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            min-height: 297mm; /* A4 Ratio */
+        }
+
+        /* 1. Header Styling */
+        .header { 
+            text-align: center;
+            border-bottom: 3px double #e2e8f0;
+            padding-bottom: 30px;
+            margin-bottom: 40px; 
+        }
+        
+        h1 { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            color: #0f172a;
+            margin-bottom: 8px; 
+            letter-spacing: -0.025em; 
+        }
+        
+        .sub-header { 
+            color: #2563eb; 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            margin-bottom: 12px; 
+        }
+        
+        .session-text { 
+            text-transform: uppercase; 
+            color: #64748b; 
+            font-size: 0.85rem; 
+            letter-spacing: 0.1em; 
+            font-weight: 700; 
+        }
+        
+        /* 2. Table Styles */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px;
+        }
+        
+        th { 
+            background-color: #f8fafc; 
+            color: #475569; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            padding: 14px; 
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        
+        td { 
+            padding: 14px; 
+            border: 1px solid #e2e8f0; 
+            text-align: left; 
+            font-size: 0.9rem; 
+        }
+
+        /* Hover effect for screen viewing */
+        tr:hover td { background-color: #f1f5f9; }
+        
+        .course-bold { font-weight: 700; color: #1e293b; }
+        .lecturer-name { font-style: italic; color: #64748b; font-size: 0.8rem; }
+        
+        /* 3. Action Buttons */
+        .no-print { 
+            margin-top: 50px; 
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print { background: #1e293b; color: white; }
+        .btn-print:hover { background: #334155; }
+
+        .btn-dashboard { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; }
+        .btn-dashboard:hover { background: #f1f5f9; }
+
+        /* Print Media Query */
+        @media print {
+            body { padding: 0; background-color: white; }
+            .page-container { box-shadow: none; padding: 0; border-radius: 0; }
+            .no-print { display: none; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div class="header">
+            <h1>{{ institution|upper }}</h1>
+            
+            <div class="sub-header">
+                {% if program %}
+                    {{ program.academic_level.name }} - {{ program.main_program.name }}
+                    {% if program.specialization %}({{ program.specialization }}){% endif %}
+                {% else %}
+                    {{ level_name }} - {{ program_name_fallback }}
+                {% endif %}
+            </div>
+            
+            <p class="session-text">
+                TIMETABLE FOR 
+                {% if start_date and start_date != "None" %}
+                    ({{ start_date }} TO {{ end_date }})
+                {% else %}
+                    (CURRENT ACADEMIC SESSION)
+                {% endif %}
+            </p>
+        </div>
+
+        {% if slots %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Sem</th>
+                    <th style="width: 100px;">Code</th>
+                    <th>Course Name</th>
+                    <th>Day</th>
+                    <th>Time Window</th>
+                    <th>Venue / Room</th>
+                    <th>Lecturer Assigned</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in slots %}
+                <tr>
+                    <td>{{ slot.semester }}</td>
+                    <td class="course-bold">{{ slot.course.course_code }}</td>
+                    <td>{{ slot.course.course_name }}</td>
+                    <td>{{ slot.assigned_day|default:"Unassigned" }}</td>
+                    <td>{{ slot.assigned_time|default:"TBD" }}</td>
+                    <td>{{ slot.assigned_room.room_name|default:"Pending" }}</td>
+                    <td class="lecturer-name">
+                        {% for lec in slot.course.lecturers.all %}
+                            {{ lec.lec_fname }} {{ lec.lec_lname }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Not Assigned
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div style="padding: 100px; color: #94a3b8; border: 2px dashed #e2e8f0; border-radius: 12px; text-align: center;">
+                <p>No timetable data generated yet for this selection.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="no-print">
+        <a href="{% url 'dashboard' %}" class="btn btn-dashboard">
+            ← Return to Dashboard
+        </a>
+        <button class="btn btn-print" onclick="window.print()">
+            Download / Print PDF
+        </button>
+    </div>
+
+</body>
+</html>

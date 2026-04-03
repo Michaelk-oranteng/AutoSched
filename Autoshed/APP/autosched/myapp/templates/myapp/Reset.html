@@ -1,0 +1,43 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+
+{% block title %}Reset - AutoSched{% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'myapp/login.css' %}" />
+{% endblock %}
+
+{% block body %} 
+
+<section id="login-overlay">
+    <div class="login-3d-card">
+        <a href="{% url 'home' %}" class="close-btn">&times;</a>
+        
+        <div class="login-header">
+            <h3>Reset Your Password</h3>
+        </div>
+
+        <form action="{% url 'reset_view' %}" method="POST" class="login-form-main">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                {{ form.email }} 
+                
+                {% if form.email.errors %}
+                    <div class="errorlist">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="continue-btn">Reset Password</button>
+        </form>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{% url 'login_view' %}" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem;">
+                &larr; Back to Login
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

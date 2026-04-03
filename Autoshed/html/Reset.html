@@ -1,0 +1,27 @@
+{% extends "autoSched/base.html" %}
+{% load static %}
+
+{% block title %}Reset - AutoSched{% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'autosched/login.css' %}" />
+{% endblock %}
+
+{% block body %} 
+
+<section id="login-overlay">
+    <div class="login-3d-card">
+        <a href="{% url 'home' %}" class="close-btn">&times;</a>
+        <div class="login-header">
+            <h3>Reset Your Password</h3>
+            <p>Enter your email to get back into your account</p>
+        </div>
+        <form action="" method="POST" class="login-form-main">
+            {% csrf_token %}
+            {{form.email}} {{form.email.errors}}
+            <button type="submit" class="continue-btn">Reset Password</button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

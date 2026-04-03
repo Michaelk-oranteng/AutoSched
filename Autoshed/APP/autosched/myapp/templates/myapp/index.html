@@ -1,0 +1,210 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+
+{% block title %}Auto Schedule{% endblock %}
+
+{% block css_files %} 
+    <link rel="stylesheet" href="{% static 'myapp/app.css' %}" />
+{% endblock %}
+
+{% block body %}
+    <!-- Smoke Background for Glassmorphic Effect -->
+    <div class="smoke-bg">
+        <div class="smoke smoke-1"></div>
+        <div class="smoke smoke-2"></div>
+        <div class="smoke smoke-3"></div>
+        <div class="smoke smoke-4"></div>
+        <div class="smoke smoke-5"></div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header id="main-navigation">
+        <h1><a href="{% url 'home' %}">AutoSched</a></h1>
+        <button class="menu-toggle" aria-label="Menu">☰</button>
+        <nav>
+            <a href="{% url 'home' %}">HOME</a>
+            <a href="#services">SERVICES</a>
+            <a href="#about-us">ABOUT US</a>
+            <a href="#contact-us">CONTACT US</a>
+            <a href="{% url 'login_view' %}">LOGIN</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="Welcome">
+            <div class="hero-text">
+                <h1>Generating Conflict Free Timetables In Minutes</h1>
+                <ul>
+                    <li>Perfect for institutions, teachers, students, and Professionals</li>
+                    <li>Solves even complex tasks in no time</li>
+                    <li>Professionally created timetables for everybody</li>
+                </ul>
+                <div class="cta-wrapper">
+                    <a href="{% url 'login_view' %}" class="cta-button">Get Started →</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{% static 'myapp/images/intro.jpg' %}" alt="intro">
+            </div>
+        </section>
+
+        <!-- Content Section -->
+        <section id="content">
+            <div class="content-container">
+                <div class="slashed-image-side">
+                    <div class="slash-item s1">
+                        <img src="{% static 'myapp/images/planning.jpg' %}" alt="Scheduling">
+                    </div>
+                </div>
+                <div class="content-card">
+                    <h1>AutoSched makes it all easy</h1>
+                    <p>
+                        Generate Timetables for lessons, teacher substitutions, rooms, and break supervisions.
+                        Your tasks include creating complex timetables, quickly finding an adequate 
+                        substitution or a free room, and managing administrative challenges effortlessly.
+                        AutoSched keeps you up to date while giving you more time for important tasks.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services">
+            <div class="services-header">
+                <h1>Intelligent Scheduling Redefined</h1>
+                <p>At the core of our platform lies a powerful Genetic Algorithm engine.</p> 
+                <p>We don't just create tables; we evolve solutions.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="icon">🧬</div>
+                    <h2>Conflict-Free Optimization</h2>
+                    <p>Our algorithm treats "hard constraints" as critical failures, filtering out overlaps during evolution to ensure 100% feasibility.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">🔔</div>
+                    <h2>Smart Notifications</h2>
+                    <p>Integrated real-time sync ensures that the moment a schedule is updated, faculty and students receive instant alerts.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">🏢</div>
+                    <h2>Resource Allocation</h2>
+                    <p>Intelligently maps class sizes to room capacities, maximizing your campus footprint and reducing utility overhead.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">⚙️</div>
+                    <h2>Custom Constraints</h2>
+                    <p>Define "soft" preferences like lecturer availability, gap minimization, and fairness logic for a better campus experience.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about-us">
+            <div class="Our-Mission">
+                <h1>Our Mission</h1>
+                <p>
+                    To deliver intelligent, optimization-driven scheduling solutions that eliminate administrative 
+                    stress, allowing educators and students to focus on what matters most: learning
+                </p>
+            </div>
+            <div class="About-AutoSched">
+                <h1>About Us</h1>
+                <p>
+                    Born from a simple observation: manual timetable creation is a bottleneck for academic success. 
+                    As developers who have faced the frustration of scheduling conflicts firsthand, we built a solution 
+                    that transforms a multi-day headache into a few clicks of automated precision.
+                </p>
+            </div>
+            <div class="Our-Vision">
+                <h1>Our Vision</h1>
+                <p>Setting the standard for seamless academic logistics through evolutionary computing.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-us">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h1>Get in Touch</h1>
+                    <p>Have questions about how our <strong>Genetic Algorithm</strong> can fit your institution? Send us a message and our team will get back to you.</p>
+                    <div class="contact-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">📍</span>
+                            <p>Ghana, Accra.</p>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">✉️</span>
+                            <p>support@autosched.edu</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form-container">
+                    <form class="glass-form">
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" name="fullname" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="email@institution.edu">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Tell us about your scheduling needs..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message —></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>AutoSched</h2>
+                <p>Evolving the future of academic logistics through intelligent, conflict-free scheduling.</p>
+                <div class="social-links">
+                    <a href="#">Linked<span>In</span></a>
+                    <a href="#">Git<span>Hub</span></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#Welcome">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about-us">About Us</a></li>
+                    <li><a href="#contact-us">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-tech">
+                <h3>Powered By</h3>
+                <ul>
+                    <li>Genetic Algorithms</li>
+                    <li>Python / Django</li>
+                    <li>Glassmorphism UI</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AutoSched Thesis Project. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const nav = document.querySelector('#main-navigation nav');
+            if (menuToggle && nav) {
+                menuToggle.addEventListener('click', function() {
+                    nav.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+{% endblock %}
